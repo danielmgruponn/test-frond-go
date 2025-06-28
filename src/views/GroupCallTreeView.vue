@@ -21,7 +21,7 @@
         name: "GroupCallTreeView",
         data() {
             return {
-                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjU4MTQyMTcsImlkIjozLCJ1c2VybmFtZSI6InRlc3QtMyJ9.rIFTiDmfSWZkJ6qWwhXsUfYvdtf2vC5jcM0829MiMJg',
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjcwMjU0MDIsImlkIjozLCJ1c2VybmFtZSI6InRlc3QtNSJ9.SqMeT0nhVs045WMlR-MgzjvLoYbBcBGFFnQ7Tr6HV9c",
                 socket: null as WebSocket | null,
                 peerConnections: {} as { [key: string]: Peer.Instance | null },
                 peerStreams: {} as { [key: string]: MediaStream | null },

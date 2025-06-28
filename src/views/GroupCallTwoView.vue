@@ -7,6 +7,7 @@
             <button v-on:click="leaveRoom">Leave Room</button>
             <button v-on:click="toggleVideo">Toggle Video</button>
             <div v-for="(stream, peerId) in peerStreams" :key="peerId">
+                <h5>{{ peerId }} -- id</h5>
                 <video :ref="'video-' + peerId" autoplay playsinline></video>
             </div>
         </div>
@@ -21,7 +22,7 @@
         name: "GroupCallTwoView",
         data() {
             return {
-                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjU4MTQyMDAsImlkIjoyLCJ1c2VybmFtZSI6InRlc3QtMiJ9.2Yo04IhTMGK_ZW9InDxNPMGNL2alTelTCKwoFaL70nw',
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjcwMTYzMjMsImlkIjoyLCJ1c2VybmFtZSI6InRlc3QtNCJ9.GGstFzhTrMcl59aCPtGJkES8DI_OLiXyfdtaBAonYrk",
                 socket: null as WebSocket | null,
                 peerConnections: {} as { [key: string]: Peer.Instance | null },
                 peerStreams: {} as { [key: string]: MediaStream | null },
@@ -41,7 +42,7 @@
                 }
                 this.socket.onmessage = (event: MessageEvent) => {
                     const mns = JSON.parse(event.data)
-                    console.log(mns);
+                    console.log("Data of server: ", mns);
                     switch (mns.type) {
                         case 'user-joined':
                             this.addPeer(mns.userId, true)
@@ -80,15 +81,14 @@
                 }
             },
             addPeer(peerId: string, initiator: boolean): void {
-                console.log("eee");
                 if (!this.localStream) return;
-                console.log("rrrr");
                 this.peerConnections[peerId] = new Peer({
                     initiator: initiator,
                     stream: this.localStream,
                     trickle: false
                 })
                 this.peerConnections[peerId]?.on('signal', (data) => {
+                    console.log("send user 2: ", initiator ? 'offer' : 'answer');
                     this.sendToServe({
                         type: initiator ? 'offer' : 'answer',
                         to: peerId,
@@ -96,6 +96,8 @@
                     })
                 })
                 this.peerConnections[peerId]?.on('stream', (stream) => {
+                    console.log("list of peer: ", this.peerConnections);
+                    
                     this.peerStreams[peerId] = stream
                     this.$nextTick(() => {
                         const videoEl = this.$refs[`video-${peerId}`] as unknown as HTMLVideoElement | HTMLVideoElement[];
@@ -130,6 +132,8 @@
             async joinRoom(): Promise<void>{
                 try {
                     this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: this.isVideoEnabled })
+                    console.log("join: ", 2);
+                    
                     this.sendToServe({type: 'join'})
                 } catch (error) {
                     console.error('Error accessing media devices:', error);
